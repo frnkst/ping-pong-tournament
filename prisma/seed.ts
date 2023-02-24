@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import invariant from "tiny-invariant";
 
 const prisma = new PrismaClient();
-console.log("env", process.env);
 
 invariant(process.env.ADMIN_PASSWORD, "You must set ADMIN_PASSWORD in .env file");
 
