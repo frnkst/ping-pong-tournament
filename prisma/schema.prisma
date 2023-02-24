@@ -8,9 +8,23 @@ generator client {
 }
 
 model Player {
-  id  String @id @default(cuid())
-  name String @unique
+  id     String @id @default(cuid())
+  name   String @unique
   avatar String
+}
+
+model Tournament {
+  id   String   @id @default(cuid())
+  name String   @unique
+  date DateTime
+}
+
+model Game {
+  id String @id @default(cuid())
+
+  tournamentId String
+  playerId String
+  score Int
 }
 
 model User {
