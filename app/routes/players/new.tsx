@@ -17,8 +17,13 @@ const validateFormData = (inputs: unknown) => {
   return parsed.data;
 };
 
-export async function action({ request }: ActionArgs) {
+export function ErrorBoundary({ error }: { error: Error}) {
+  return (<>
+    Could not create user: { error.message }
+  </>)
+}
 
+export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const a = formData.get("name");
   const b = formData.get("avatar");

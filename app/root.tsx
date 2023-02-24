@@ -44,3 +44,22 @@ export default function App() {
     </html>
   );
 }
+export function ErrorBoundary({ error }: { error: Error}) {
+  console.error(error);
+  return (
+    <html>
+    <head>
+      <title>Oh no!</title>
+      <Meta />
+      <Links />
+    </head>
+    <body>
+    <div>
+      Something bad happened. Please try again!
+      { error.message }
+    </div>
+    <Scripts />
+    </body>
+    </html>
+  );
+}
