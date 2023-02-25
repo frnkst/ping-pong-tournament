@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import invariant from "tiny-invariant";
+import is from "@sindresorhus/is";
+import primitive = is.primitive;
 
 const prisma = new PrismaClient();
 
@@ -26,6 +28,34 @@ async function seed() {
       },
     },
   });
+
+  const tournament = await prisma.tournament.create({
+    data: {
+      name: "A brand new the Stars",
+      date: new Date()
+    }
+  })
+
+  const player1 = await prisma.player.create({ data: {
+      name: "john b.",
+      avatar: "test"
+    }})
+
+  const player2 = await prisma.player.create({ data: {
+    name: "wick c.",
+      avatar: "test"
+    }})
+
+  await prisma.game.create({
+    data: {
+      tournamentId: tournament.id,
+      player1Id: player1.id,
+      player2Id: player2.id,
+      scorePlayer1: 21,
+      scorePlayer2: 14
+    }
+    }
+  );
 
   await prisma.note.create({
     data: {

@@ -11,20 +11,31 @@ model Player {
   id     String @id @default(cuid())
   name   String @unique
   avatar String
+  player1 Game[] @relation("Player1")
+  player2 Game[] @relation("Player2")
 }
 
 model Tournament {
   id   String   @id @default(cuid())
   name String   @unique
   date DateTime
+  Game Game?
 }
 
 model Game {
   id String @id @default(cuid())
 
-  tournamentId String
-  playerId String
-  score Int
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  tournamentId String     @unique
+
+  player1   Player   @relation("Player1", fields: [player1Id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player1Id String @unique
+
+  player2   Player   @relation("Player2", fields: [player2Id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  player2Id String @unique
+
+  scorePlayer1 Int
+  scorePlayer2 Int
 }
 
 model User {
