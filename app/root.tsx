@@ -10,13 +10,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
-import { MetaFunction, LinksFunction } from '@remix-run/node' // Depends on the runtime you choose
+import type { MetaFunction, LinksFunction } from '@remix-run/node' // Depends on the runtime you choose
 
 import { ServerStyleContext, ClientStyleContext } from './context'
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'New Remix App',
+  title: 'Ping Pong Tournament',
   viewport: 'width=device-width,initial-scale=1',
 });
 
