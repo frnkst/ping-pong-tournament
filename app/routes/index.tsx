@@ -1,72 +1,50 @@
-import Games from "~/components/games";
 import { prisma } from "~/db.server";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-import { Bar, BarChart, ResponsiveContainer } from "recharts";
+import { Link, useLoaderData } from "@remix-run/react";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Center,
+  Heading,
+  SimpleGrid
+} from "@chakra-ui/react";
 
 export async function loader() {
-  const games = await prisma.game.findMany({ include: { player1: true, player2: true } });
-  return json({ games });
+  //const games = await prisma.game.findMany({ include: { player1: true, player2: true } });
+  const tournaments = await prisma.tournament.findMany();
+  return json({ tournaments });
 }
-
-const abc = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
 
 export default function Index() {
   const data = useLoaderData<typeof loader>();
 
   return (
     <>
-      <Games games={data.games}></Games>
-      <br />
-      <br />
-      <br />
-      <br />
-        <BarChart width={550} height={400} data={abc}>
-          <Bar dataKey="uv" fill="#8884d8" />
-        </BarChart>
-    </>
+      {/*<Games games={data.games}></Games>*/}
+
+      <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(200px, 1fr))">
+        {data.tournaments.map(tournament => (
+          <Link to={"/tournaments/" + tournament.name} key={tournament.id}>
+            <Card>
+              <CardHeader>
+                <Heading size="md">
+                  <Center>{tournament.name}</Center>
+                </Heading>
+              </CardHeader>
+              <CardBody>
+                <Center>
+                </Center>
+              </CardBody>
+              <CardFooter>
+              </CardFooter>
+            </Card>
+          </Link>
+          )
+        )}
+      </SimpleGrid>
+     </>
+
   );
 }

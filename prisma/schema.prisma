@@ -19,7 +19,7 @@ model Tournament {
   id   String   @id @default(cuid())
   name String   @unique
   date DateTime
-  Game Game?
+  games Game[]
 }
 
 model Game {
