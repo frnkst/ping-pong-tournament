@@ -1,25 +1,31 @@
-import type {
-  FetcherWithComponents} from "@remix-run/react";
-import {
-  Link,
-  useFetcher,
-  useLoaderData,
-  useParams
-} from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/node";
-import { ActionArgs, json } from "@remix-run/node";
+import { ActionArgs, json, redirect } from "@remix-run/node";
 import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  SimpleGrid,
+  Button,
   Card,
-  CardHeader, Heading, Center, CardBody, CardFooter, Editable, EditablePreview, EditableInput
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Center,
+  Heading,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  SimpleGrid,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useDisclosure
 } from "@chakra-ui/react";
 import { prisma } from "~/db.server";
-import type { Game, Player } from "@prisma/client";
 
 export async function loader({ params }: LoaderArgs) {
   const tournamentName = params.tournamentName;
@@ -27,16 +33,26 @@ export async function loader({ params }: LoaderArgs) {
   return json({ tournament });
 }
 
-function updateScore(scorePlayer1: string, scorePlayer2: string, fetcher: FetcherWithComponents<any>, game: Game & { player1: Player; player2: Player; }) {
-  fetcher.submit(
-    { scorePlayer1, scorePlayer2, gameId: game.id },
-    { method: "post", action: "/games/update" }
-  );
-}
+export async function action({ request }: ActionArgs) {
+  const form = await request.formData();
+  console.log("bla", form);
 
+  // Use zod to validate data
+  const scorePlayer1 = parseInt(form.get("scorePlayer1") as string);
+  const scorePlayer2 = parseInt(form.get("scorePlayer2") as string);
+  const game = form.get("gameId") as string;
+
+  try {
+    await prisma.game.update({ where: { id: game}, data: { scorePlayer1, scorePlayer2}})
+    return null;
+  } catch (error) {
+    console.log("frank", error);
+    return null;
+  }
+}
 export default function Tournament() {
-  const fetcher = useFetcher();
   const data = useLoaderData<typeof loader>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (<Tabs>
     <TabList>
@@ -56,23 +72,37 @@ export default function Tournament() {
                 </CardHeader>
                 <CardBody>
                   <Center>
-                    <Editable defaultValue={game.scorePlayer1.toString()}
-                              onSubmit={newScore => updateScore(newScore, game.scorePlayer2.toString(), fetcher, game)}
-                    >
-                      <EditablePreview />
-                      <EditableInput />
-                    </Editable>
+                    {game.scorePlayer1.toString()}
                     :
-                    <Editable defaultValue={game.scorePlayer2.toString()}
-                              onSubmit={newScore => updateScore(game.scorePlayer1.toString(), newScore, fetcher, game)}
-                    >
-                      <EditablePreview />
-                      <EditableInput />
-                    </Editable>
+                    {game.scorePlayer2.toString()}
                   </Center>
                 </CardBody>
                 <CardFooter>
+                  <Button colorScheme='blue' onClick={onOpen}>Edit</Button>
                 </CardFooter>
+                <Modal isOpen={isOpen} onClose={onClose}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <Form method="post">
+                    <ModalHeader>Edit score</ModalHeader>
+                    <ModalCloseButton />
+
+                    <ModalBody>
+                      { game.player1.name }: <Input name="scorePlayer1" placeholder={game.scorePlayer1.toString()}></Input>
+                      <br />
+                      { game.player2.name }: <Input name="scorePlayer2" placeholder={game.scorePlayer2.toString()}></Input>
+                    </ModalBody>
+                      <Input type="hidden" name="gameId" value={game.id}></Input>
+
+                    <ModalFooter>
+                      <Button onClick={onClose} variant='ghost'>
+                        Cancel
+                      </Button>
+                      <Button colorScheme='blue' mr={3} type="submit" onClick={() => onClose()}>Save</Button>
+                    </ModalFooter>
+                    </Form>
+                  </ModalContent>
+                </Modal>
               </Card>
               )
             )}

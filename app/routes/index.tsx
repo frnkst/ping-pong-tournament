@@ -30,7 +30,7 @@ export default function Index() {
             <Card>
               <CardHeader>
                 <Heading size="md">
-                  <Center>{tournament.name}</Center>
+                  <Center color="blue">{tournament.name}</Center>
                 </Heading>
               </CardHeader>
               <CardBody>
