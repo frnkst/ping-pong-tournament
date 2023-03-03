@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 import type { ActionArgs} from "@remix-run/node";
-import { json, LoaderArgs } from "@remix-run/node";
-import { Form, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
+import { json  } from "@remix-run/node";
+import { Form, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
 import {
   BottomNavigation,
   BottomNavigationAction, Box,
@@ -9,11 +9,13 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardMedia, Input, Modal, Grid,
+  Input,
+  Modal,
+  Grid,
   Typography,
   Paper
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import type { Game } from ".prisma/client";
@@ -127,11 +129,39 @@ const classes = {
 };
 
 export default function Index() {
-  const data = useLoaderData<typeof loader>();
+  //const data = useLoaderData<typeof loader>();
   const [selectedTab, setSelectedTab ]= useState(0);
   const handleSelection = (selection: any) => {
     setSelectedTab(selection);
   };
+
+  const loaderData = useLoaderData<typeof loader>();
+  const [data, setData] = useState(loaderData);
+
+  // Whenever the loader gives us new data
+  // (for example, after a form submission),
+  // update our `data` state.
+  useEffect(() => setData(loaderData), [loaderData]);
+
+  const fetcher = useFetcher();
+
+  // Get fresh data every 30 seconds.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("frank");
+        fetcher.load("/");
+    }, 3 * 1000);
+
+    return () => clearInterval(interval);
+  }, )
+
+  // When the fetcher comes back with new data,
+  // update our `data` state.
+  useEffect(() => {
+    if (fetcher.data) {
+      setData(fetcher.data);
+    }
+  }, [fetcher.data]);
 
   return (
     <>
