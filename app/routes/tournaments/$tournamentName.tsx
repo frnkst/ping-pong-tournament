@@ -146,9 +146,9 @@ export default function Tournament() {
       </Box>
       <TabPanel value={value} index={0}>
         {data.tournament?.games.map(game => (
-          <Card sx={{ maxWidth: 345 }} key={game.id}>
+          <Card sx={{ maxWidth: 200 }} key={game.id}>
             <CardMedia
-              sx={{ height: 140 }}
+              sx={{ height: 50 }}
               image="/static/images/cards/contemplative-reptile.jpg"
               title="green iguana"
             />
