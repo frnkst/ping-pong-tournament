@@ -34,6 +34,7 @@
     "/postgres-data"
   ],
   "dependencies": {
+    "@emotion/react": "^11.10.6",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.6",
     "@isaacs/express-prometheus-middleware": "^1.2.1",
