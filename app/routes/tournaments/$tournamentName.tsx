@@ -1,34 +1,42 @@
-import { Form, useLoaderData } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/node";
-import { ActionArgs, json, redirect } from "@remix-run/node";
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Center,
-  Heading,
-  Input,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  SimpleGrid,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-  useDisclosure
-} from "@chakra-ui/react";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
+import { Form, useLoaderData, useSubmit } from "@remix-run/react";
+import {
+  Box, Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia, Input,
+  Modal,
+  Tab,
+  Tabs,
+  Typography
+} from "@mui/material";
+import type { SyntheticEvent} from "react";
+import React, { useState } from "react";
+import type { Game } from ".prisma/client";
+import type { Player } from "@prisma/client";
+
+
+const style = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 export async function loader({ params }: LoaderArgs) {
   const tournamentName = params.tournamentName;
-  const tournament = await prisma.tournament.findFirst({ where: { name: tournamentName}, include: { games: { include: { player1: true, player2: true}},  }})
+  const tournament = await prisma.tournament.findFirst({
+    where: { name: tournamentName },
+    include: { games: { include: { player1: true, player2: true } } }
+  });
   return json({ tournament });
 }
 
@@ -42,70 +50,132 @@ export async function action({ request }: ActionArgs) {
   const game = form.get("gameId") as string;
 
   try {
-    await prisma.game.update({ where: { id: game}, data: { scorePlayer1, scorePlayer2}})
+    await prisma.game.update({ where: { id: game }, data: { scorePlayer1, scorePlayer2 } });
     return null;
   } catch (error) {
     console.log("frank", error);
     return null;
   }
 }
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function EditModal({ game }: { game:  Game & {player1: Player, player2: Player}}) {
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = (event: any) => {
+    submit(event.currentTarget, { replace: true });
+    setOpen(false);
+  }
+  const submit = useSubmit();
+
+  return (
+    <div>
+      <Button onClick={handleOpen}>Edit</Button>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Form method="post">
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Edit score
+          </Typography>
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            { game.player1.name }: <Input name="scorePlayer1" placeholder={game.scorePlayer1.toString()}></Input>
+            <br />
+            { game.player2.name }: <Input name="scorePlayer2" placeholder={game.scorePlayer2.toString()}></Input>
+            <Input type="hidden" name="gameId" value={game.id}></Input>
+          </Typography>
+          <Button onClick={handleClose}>Submit</Button>
+        </Box>
+        </Form>
+      </Modal>
+    </div>
+  );
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`
+  };
+}
+
 export default function Tournament() {
   const data = useLoaderData<typeof loader>();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [value, setValue] = useState(0);
 
-  return (<Tabs>
-    <TabList>
-      <Tab>Games</Tab>
-      <Tab>Stats</Tab>
-    </TabList>
+  const handleChange = (event: SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
 
-    <TabPanels>
-      <TabPanel>
-          <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(200px, 1fr))">
-            {data.tournament?.games.map(game => (
-              <Card key={game.id}>
-                <CardHeader>
-                  <Heading size="md">
-                    <Center>{game.player1.name} vs {game.player2.name}</Center>
-                  </Heading>
-                </CardHeader>
-                <CardBody>
-                  <Center>
-                    {game.scorePlayer1.toString()}
-                    :
-                    {game.scorePlayer2.toString()}
-                  </Center>
-                </CardBody>
-                <CardFooter>
-                </CardFooter>
-                <Modal isOpen={isOpen} onClose={onClose}>
-                  <ModalOverlay />
-                  <ModalContent>
-                    <Form method="post">
-                    <ModalHeader>Edit score</ModalHeader>
-                    <ModalCloseButton />
-
-                    <ModalBody>
-                      { game.player1.name }: <Input name="scorePlayer1" placeholder={game.scorePlayer1.toString()}></Input>
-                      <br />
-                      { game.player2.name }: <Input name="scorePlayer2" placeholder={game.scorePlayer2.toString()}></Input>
-                    </ModalBody>
-                      <Input type="hidden" name="gameId" value={game.id}></Input>
-
-                    <ModalFooter>
-                        Cancel
-                    </ModalFooter>
-                    </Form>
-                  </ModalContent>
-                </Modal>
-              </Card>
-              )
-            )}
-          </SimpleGrid>
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+          <Tab label="Item One" {...a11yProps(0)} />
+          <Tab label="Item Two" {...a11yProps(1)} />
+          <Tab label="Item Three" {...a11yProps(2)} />
+        </Tabs>
+      </Box>
+      <TabPanel value={value} index={0}>
+        {data.tournament?.games.map(game => (
+          <Card sx={{ maxWidth: 345 }} key={game.id}>
+            <CardMedia
+              sx={{ height: 140 }}
+              image="/static/images/cards/contemplative-reptile.jpg"
+              title="green iguana"
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {game.player1.name} vs {game.player2.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {game.scorePlayer1.toString()}
+                :
+                {game.scorePlayer2.toString()}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <EditModal game={game}></EditModal>
+            </CardActions>
+          </Card>
+        ))}
       </TabPanel>
-      <TabPanel>
-        <p>two!</p>
+      <TabPanel value={value} index={1}>
+        Item Two
       </TabPanel>
-    </TabPanels>
-  </Tabs>)
+      <TabPanel value={value} index={2}>
+        Item Three
+      </TabPanel>
+    </Box>
+  );
 }
+
