@@ -21,64 +21,37 @@ async function seed() {
       email,
       password: {
         create: {
-          hash: hashedPassword,
-        },
-      },
-    },
+          hash: hashedPassword
+        }
+      }
+    }
   });
 
-  const tournament = await prisma.tournament.create({
-    data: {
-      name: "All Stars Tournament",
-      date: new Date()
-    }
-  })
-
-  const player1 = await prisma.player.create({ data: {
-      name: "Frank",
-      avatar: "test"
-    }})
-
-  const player2 = await prisma.player.create({ data: {
-    name: "Yves",
-      avatar: "test"
-    }})
-
-  await prisma.game.create({
-    data: {
-      tournamentId: tournament.id,
-      player1Id: player1.id,
-      player2Id: player2.id,
-      scorePlayer1: 21,
-      scorePlayer2: 14
-    }
-    }
-  );
 
   await prisma.note.create({
     data: {
       title: "My first note",
       body: "Hello, world!",
-      userId: user.id,
-    },
+      userId: user.id
+    }
   });
 
   await prisma.note.create({
     data: {
       title: "My second note",
       body: "Hello, world!",
-      userId: user.id,
-    },
+      userId: user.id
+    }
   });
 
   console.log(`Database has been seeded. 🌱`);
 }
 
 seed()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+.catch((e) => {
+  console.error(e);
+  process.exit(1);
+})
+.finally(async () => {
+  await prisma.$disconnect();
+});

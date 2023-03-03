@@ -1,3 +1,6 @@
+//npx prisma migrate reset && prisma migrate dev && ts-node prisma/allstars.ts
+
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -10,7 +13,6 @@ generator client {
 model Player {
   id     String @id @default(cuid())
   name   String @unique
-  avatar String
   player1 Game[] @relation("Player1")
   player2 Game[] @relation("Player2")
 }
@@ -18,7 +20,9 @@ model Player {
 model Tournament {
   id   String   @id @default(cuid())
   name String   @unique
+  description String
   date DateTime
+  image String
   games Game[]
 }
 
@@ -26,13 +30,13 @@ model Game {
   id String @id @default(cuid())
 
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  tournamentId String     @unique
+  tournamentId String
 
   player1   Player   @relation("Player1", fields: [player1Id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  player1Id String @unique
+  player1Id String
 
   player2   Player   @relation("Player2", fields: [player2Id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  player2Id String @unique
+  player2Id String
 
   scorePlayer1 Int
   scorePlayer2 Int

@@ -145,6 +145,7 @@ export default function Tournament() {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
+        <Box sx={{ display: 'flex' }}>
         {data.tournament?.games.map(game => (
           <Card sx={{ maxWidth: 200 }} key={game.id}>
             <CardMedia
@@ -167,6 +168,7 @@ export default function Tournament() {
             </CardActions>
           </Card>
         ))}
+        </Box>
       </TabPanel>
       <TabPanel value={value} index={1}>
         Item Two
