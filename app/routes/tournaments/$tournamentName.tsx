@@ -3,6 +3,8 @@ import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { Form, useLoaderData, useSubmit } from "@remix-run/react";
 import {
+  BottomNavigation,
+  BottomNavigationAction,
   Box, Button,
   Card,
   CardActions,
@@ -13,10 +15,12 @@ import {
   Tabs,
   Typography
 } from "@mui/material";
-import type { SyntheticEvent } from "react";
-import React, { useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import type { Game } from ".prisma/client";
 import type { Player } from "@prisma/client";
+import RestoreIcon from '@mui/icons-material/Restore';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 
 const style = {
@@ -54,12 +58,6 @@ export async function action({ request }: ActionArgs) {
   } catch (error) {
     return null;
   }
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
 }
 
 function EditModal({ game }: { game: Game & { player1: Player, player2: Player } }) {
@@ -101,32 +99,6 @@ function EditModal({ game }: { game: Game & { player1: Player, player2: Player }
   );
 }
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`
-  };
-}
 
 export default function Tournament() {
   const data = useLoaderData<typeof loader>();
@@ -136,18 +108,8 @@ export default function Tournament() {
     setValue(newValue);
   };
 
-  return (
-    <Grid sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Games" {...a11yProps(0)} />
-          <Tab label="Live Scoreboard" {...a11yProps(1)} />
-        </Tabs>
-      </Box>
-      <TabPanel value={value} index={0}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            {data.tournament?.games.map(game => (
+  return (<>
+            { data.tournament?.games.map(game => (
               <Card sx={{ maxWidth: 200, minWidth: 50 }} key={game.id.toString()}>
                 <CardMedia
                   sx={{ height: 50 }}
@@ -169,13 +131,7 @@ export default function Tournament() {
                 </CardActions>
               </Card>
             ))}
-          </Grid>
-        </Grid>
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        Item Two
-      </TabPanel>
-    </Grid>
+    </>
   );
 }
 
