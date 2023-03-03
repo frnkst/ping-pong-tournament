@@ -3,24 +3,19 @@ import { json } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { Form, useLoaderData, useSubmit } from "@remix-run/react";
 import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Box, Button,
+  Box,
+  Button,
   Card,
   CardActions,
   CardContent,
-  CardMedia, Grid, Input,
+  CardMedia,
+  Input,
   Modal,
-  Tab,
-  Tabs,
   Typography
 } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
 import type { Game } from ".prisma/client";
 import type { Player } from "@prisma/client";
-import RestoreIcon from '@mui/icons-material/Restore';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 
 const style = {
