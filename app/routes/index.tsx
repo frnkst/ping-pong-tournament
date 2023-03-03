@@ -1,50 +1,46 @@
 import { prisma } from "~/db.server";
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate } from "@remix-run/react";
 import {
+  Button,
   Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Center,
-  Heading,
-  SimpleGrid
-} from "@chakra-ui/react";
+  CardActions,
+  CardContent,
+  CardMedia,
+  Typography
+} from "@mui/material";
 
 export async function loader() {
-  //const games = await prisma.game.findMany({ include: { player1: true, player2: true } });
   const tournaments = await prisma.tournament.findMany();
   return json({ tournaments });
 }
 
 export default function Index() {
   const data = useLoaderData<typeof loader>();
-
+  const navigate = useNavigate();
   return (
     <>
-      {/*<Games games={data.games}></Games>*/}
-
-      <SimpleGrid spacing={4} templateColumns="repeat(auto-fill, minmax(200px, 1fr))">
-        {data.tournaments.map(tournament => (
-          <Link to={"/tournaments/" + tournament.name} key={tournament.id}>
-            <Card>
-              <CardHeader>
-                <Heading size="md">
-                  <Center color="blue">{tournament.name}</Center>
-                </Heading>
-              </CardHeader>
-              <CardBody>
-                <Center>
-                </Center>
-              </CardBody>
-              <CardFooter>
-              </CardFooter>
-            </Card>
-          </Link>
-          )
-        )}
-      </SimpleGrid>
-     </>
-
-  );
+      {data.tournaments.map(tournament => (
+        <Card sx={{ maxWidth: 345 }} key={tournament.id}>
+          <CardMedia
+            sx={{ height: 140 }}
+            image="/static/images/cards/contemplative-reptile.jpg"
+            title="green iguana"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {tournament.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Lizards are a widespread group of squamate reptiles, with over 6,000
+              species, ranging across all continents except Antarctica
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button size="small">Edit</Button>
+              <Button size="small" onClick={() => navigate(`/tournaments/${tournament.name}`)}>Show games</Button>
+          </CardActions>
+        </Card>
+      ))}
+    </>)
 }

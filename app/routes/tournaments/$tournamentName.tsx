@@ -2,7 +2,6 @@ import { Form, useLoaderData } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/node";
 import { ActionArgs, json, redirect } from "@remix-run/node";
 import {
-  Button,
   Card,
   CardBody,
   CardFooter,
@@ -78,7 +77,6 @@ export default function Tournament() {
                   </Center>
                 </CardBody>
                 <CardFooter>
-                  <Button colorScheme='blue' onClick={onOpen}>Edit</Button>
                 </CardFooter>
                 <Modal isOpen={isOpen} onClose={onClose}>
                   <ModalOverlay />
@@ -95,10 +93,7 @@ export default function Tournament() {
                       <Input type="hidden" name="gameId" value={game.id}></Input>
 
                     <ModalFooter>
-                      <Button onClick={onClose} variant='ghost'>
                         Cancel
-                      </Button>
-                      <Button colorScheme='blue' mr={3} type="submit" onClick={() => onClose()}>Save</Button>
                     </ModalFooter>
                     </Form>
                   </ModalContent>

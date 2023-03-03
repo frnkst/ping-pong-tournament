@@ -1,8 +1,5 @@
-// createEmotionCache.ts
-import createCache from '@emotion/cache'
-
-export const defaultCache = createEmotionCache()
+import createCache from '@emotion/cache';
 
 export default function createEmotionCache() {
-  return createCache({ key: 'cha' })
+  return createCache({ key: 'css' });
 }
