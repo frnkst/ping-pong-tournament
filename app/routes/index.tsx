@@ -1,37 +1,22 @@
 import { prisma } from "~/db.server";
-import type { ActionArgs} from "@remix-run/node";
-import { json  } from "@remix-run/node";
-import { Form, useFetcher, useLoaderData, useSubmit } from "@remix-run/react";
+import type { ActionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import {
   BottomNavigation,
-  BottomNavigationAction, Box,
-  Button,
+  BottomNavigationAction,
   Card,
   CardActions,
   CardContent,
-  Input,
-  Modal,
   Grid,
-  Typography,
-  Paper
+  Paper,
+  Typography
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import type { Game } from ".prisma/client";
-import type { Player } from "@prisma/client";
-
-const style = {
-  position: "absolute" as "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4
-};
+import ButtonAppBar from "~/routes/components/ButtonAppBar";
+import UpdateScore from "~/routes/components/UpdateScore";
 
 export async function loader() {
   const tournament = await prisma.tournament.findFirst({
@@ -55,45 +40,6 @@ export async function action({ request }: ActionArgs) {
   } catch (error) {
     return null;
   }
-}
-
-function EditModal({ game }: { game: Game & { player1: Player, player2: Player } }) {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = (event: any) => {
-    submit(event.currentTarget, { replace: true });
-    setOpen(false);
-  };
-  const submit = useSubmit();
-
-  return (
-    <div>
-      <Button onClick={handleOpen}>Edit</Button>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Form method="post">
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h3" component="h2">
-              Edit score
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              {game.player1.name}: <Input name="scorePlayer1"
-                                          placeholder={game.scorePlayer1.toString()}></Input>
-              <br />
-              {game.player2.name}: <Input name="scorePlayer2"
-                                          placeholder={game.scorePlayer2.toString()}></Input>
-              <Input type="hidden" name="gameId" value={game.id}></Input>
-            </Typography>
-            <Button onClick={handleClose}>Submit</Button>
-          </Box>
-        </Form>
-      </Modal>
-    </div>
-  );
 }
 
 export  function SimpleBottomNavigation({onSelection}: { onSelection: (value: string) => void}) {
@@ -165,6 +111,7 @@ export default function Index() {
 
   return (
     <>
+      <ButtonAppBar></ButtonAppBar>
       <SimpleBottomNavigation onSelection={handleSelection}></SimpleBottomNavigation>
       <div style={classes.root}>
       <Grid container spacing={2}>
@@ -186,7 +133,7 @@ export default function Index() {
             </Typography>
           </CardContent>
           <CardActions>
-            <EditModal game={game}></EditModal>
+            <UpdateScore game={game}></UpdateScore>
           </CardActions>
         </Card>
         </Grid>
