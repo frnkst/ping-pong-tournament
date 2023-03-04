@@ -5,23 +5,21 @@ import { useLoaderData, useNavigate } from "@remix-run/react";
 import {
   BottomNavigation,
   BottomNavigationAction,
-  Card,
-  CardActions,
-  CardContent,
   Grid,
-  Paper,
-  Typography
+  Paper
 } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
-import UpdateScore from "~/routes/components/UpdateScore";
+import GameCard from "./components/GameCard";
+import { Scoreboard } from "@mui/icons-material";
+import ScoreBoardTab from "~/routes/components/ScoreBoardTab";
 
 export async function loader() {
   const tournament = await prisma.tournament.findFirst({
-    where: { name: 'All Stars Tournament' },
-    include: { games: { include: { player1: true, player2: true }, orderBy:  {id: 'asc'}} }
+    where: { name: "All Stars Tournament" },
+    include: { games: { include: { player1: true, player2: true }, orderBy: { id: "asc" } } }
   });
   return json({ tournament });
 }
@@ -42,11 +40,11 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export  function SimpleBottomNavigation({onSelection}: { onSelection: (value: string) => void}) {
+export function SimpleBottomNavigation({ onSelection }: { onSelection: (value: string) => void }) {
   const [value, setValue] = useState(0);
 
   return (
-    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+    <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }} elevation={3}>
       <BottomNavigation
         showLabels
         value={value}
@@ -62,6 +60,7 @@ export  function SimpleBottomNavigation({onSelection}: { onSelection: (value: st
     </Paper>
   );
 }
+
 const classes = {
   root: {
     flexGrow: 1
@@ -80,7 +79,7 @@ interface Options {
 }
 
 export default function Index() {
-  const [selectedTab, setSelectedTab ]= useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
   const handleSelection = (selection: any) => {
     setSelectedTab(selection);
   };
@@ -90,7 +89,7 @@ export default function Index() {
     let navigate = useNavigate();
     // And return a function which will navigate to `.` (same URL) and replace it
     return useCallback(function revalidate() {
-      navigate('.', { replace: true });
+      navigate(".", { replace: true });
     }, [navigate]);
   }
 
@@ -103,7 +102,7 @@ export default function Index() {
     }, [revalidate, enabled, interval]);
   }
 
-  useRevalidateOnInterval({ enabled: true, interval: 10000});
+  useRevalidateOnInterval({ enabled: true, interval: 10000 });
   const data = useLoaderData<typeof loader>();
 
   return (
@@ -111,31 +110,12 @@ export default function Index() {
       <ButtonAppBar></ButtonAppBar>
       <SimpleBottomNavigation onSelection={handleSelection}></SimpleBottomNavigation>
       <div style={classes.root}>
-      <Grid container spacing={2}>
-      { selectedTab === 0 && data.tournament?.games.map(game => (
-        <Grid key={game.id.toString()} item xs={6}>
-        <Card>
-          <CardContent>
-            <Typography variant="body2" color="text.secondary">
-              Game: { game.id}
-            </Typography>
-            <br />
-            <Typography align="center">
-              {game.player1.name} - {game.player2.name}
-            </Typography>
-            <Typography align="center">
-              {game.scorePlayer1.toString()}
-              :
-              {game.scorePlayer2.toString()}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <UpdateScore game={game}></UpdateScore>
-          </CardActions>
-        </Card>
+        <Grid container spacing={2}>
+          {selectedTab === 0 && data.tournament?.games.map(game => (
+            <GameCard key={game.id.toString()} game={game}></GameCard>))}
+          {selectedTab === 1 && (
+            <ScoreBoardTab></ScoreBoardTab>)}
         </Grid>
-      ))}
-      </Grid>
       </div>
-    </>)
+    </>);
 }
