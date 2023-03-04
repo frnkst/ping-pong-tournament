@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 import type { ActionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import {
   BottomNavigation,
   BottomNavigationAction,
@@ -12,7 +12,7 @@ import {
   Paper,
   Typography
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
@@ -74,40 +74,37 @@ const classes = {
   }
 };
 
+interface Options {
+  enabled?: boolean;
+  interval?: number;
+}
+
 export default function Index() {
-  //const data = useLoaderData<typeof loader>();
   const [selectedTab, setSelectedTab ]= useState(0);
   const handleSelection = (selection: any) => {
     setSelectedTab(selection);
   };
 
-  const loaderData = useLoaderData<typeof loader>();
-  const [data, setData] = useState(loaderData);
+  function useRevalidate() {
+    // We get the navigate function from React Rotuer
+    let navigate = useNavigate();
+    // And return a function which will navigate to `.` (same URL) and replace it
+    return useCallback(function revalidate() {
+      navigate('.', { replace: true });
+    }, [navigate]);
+  }
 
-  // Whenever the loader gives us new data
-  // (for example, after a form submission),
-  // update our `data` state.
-  useEffect(() => setData(loaderData), [loaderData]);
+  function useRevalidateOnInterval({ enabled = false, interval = 1000 }: Options) {
+    let revalidate = useRevalidate();
+    useEffect(function revalidateOnInterval() {
+      if (!enabled) return;
+      let intervalId = setInterval(revalidate, interval);
+      return () => clearInterval(intervalId);
+    }, [revalidate, enabled, interval]);
+  }
 
-  const fetcher = useFetcher();
-
-  // Get fresh data every 30 seconds.
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log("frank");
-        fetcher.load("/");
-    }, 3 * 1000);
-
-    return () => clearInterval(interval);
-  }, )
-
-  // When the fetcher comes back with new data,
-  // update our `data` state.
-  useEffect(() => {
-    if (fetcher.data) {
-      setData(fetcher.data);
-    }
-  }, [fetcher.data]);
+  useRevalidateOnInterval({ enabled: true, interval: 10000});
+  const data = useLoaderData<typeof loader>();
 
   return (
     <>
