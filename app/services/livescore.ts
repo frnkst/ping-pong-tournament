@@ -1,5 +1,5 @@
-import { find } from "lodash";
 import type { GameWithPlayer } from "~/routes/components/GameCard";
+import { find, indexOf, sortBy } from "lodash";
 
 export type LiveScore = {
   player: {
@@ -11,20 +11,40 @@ export type LiveScore = {
   totalPointsLost: number
 }
 
-function getWinner(game: GameWithPlayer): LiveScore {
-  if (game.scorePlayer1 > game.scorePlayer2) {
-    return {
+function getNewScores(game: GameWithPlayer): LiveScore[] {
+  const player1IsWinner = game.scorePlayer1 > game.scorePlayer2;
+  return [
+    {
       player: game.player1,
-      wins: 1,
+      wins: player1IsWinner ? 1 : -1,
       totalPointsWon: game.scorePlayer1,
       totalPointsLost: game.scorePlayer2
-    }
-  } else {
-    return {
+    },
+    {
       player: game.player2,
-      wins: 1,
+      wins: player1IsWinner ? -1 : 1,
       totalPointsWon: game.scorePlayer2,
       totalPointsLost: game.scorePlayer1
+    }
+  ];
+}
+
+function updateLiveScore(liveScore: LiveScore[], newScores: LiveScore[]) {
+  for (const score of newScores) {
+    let existingPlayer = find(liveScore, (liveScore) => liveScore.player.id === score.player.id);
+    if (existingPlayer) {
+      const updatedScore = {
+        ...existingPlayer,
+        wins: existingPlayer.wins + score.wins,
+        totalPointsWon: existingPlayer.totalPointsWon + score.totalPointsWon,
+        totalPointsLost: existingPlayer.totalPointsLost + score.totalPointsLost
+      };
+      updatedScore.wins = updatedScore.wins < 0 ? 0 : updatedScore.wins;
+      const index = indexOf(liveScore, find(liveScore, (liveScore) => liveScore.player.id === score.player.id));
+      liveScore.splice(index, 1, updatedScore);
+    } else {
+      score.wins = score.wins < 0 ? 0 : score.wins;
+      liveScore.push(score);
     }
   }
 }
@@ -32,11 +52,12 @@ function getWinner(game: GameWithPlayer): LiveScore {
 export function getLiveScore(games: GameWithPlayer[]): LiveScore[] {
   const liveScore: LiveScore[] = [];
   for (const game of games) {
-   const winner = getWinner(game);
+    const newScores = getNewScores(game);
+    updateLiveScore(liveScore, newScores);
   }
 
-   return liveScore;
- }
+  return sortBy(liveScore, ["wins", "totalPointsWon", "totalPointsLost"]).reverse();
+}
 
 
 
