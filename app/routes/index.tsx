@@ -13,7 +13,6 @@ import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
 import GameCard from "./components/GameCard";
-import { Scoreboard } from "@mui/icons-material";
 import ScoreBoardTab from "~/routes/components/ScoreBoardTab";
 
 export async function loader() {
