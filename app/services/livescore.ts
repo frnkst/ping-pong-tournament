@@ -12,6 +12,10 @@ export type LiveScore = {
 }
 
 function getNewScores(game: GameWithPlayer): LiveScore[] {
+  if (game.scorePlayer1 === 0 && game.scorePlayer2 === 0) {
+    return [];
+  }
+
   const player1IsWinner = game.scorePlayer1 > game.scorePlayer2;
   return [
     {

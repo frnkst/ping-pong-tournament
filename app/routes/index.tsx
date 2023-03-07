@@ -8,7 +8,7 @@ import {
   Grid,
   Paper
 } from "@mui/material";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
@@ -22,6 +22,7 @@ export async function loader() {
   });
   return json({ tournament });
 }
+
 
 export async function action({ request }: ActionArgs) {
   const form = await request.formData();
@@ -76,6 +77,18 @@ interface Options {
   enabled?: boolean;
   interval?: number;
 }
+function useScroll() {
+  const [scrollPosition, setPosition] = useState(0);
+  useEffect(() => {
+    function updatePosition() {
+      setPosition(window.pageYOffset);
+    }
+    window.addEventListener('scroll', updatePosition);
+    updatePosition();
+    return () => window.removeEventListener('scroll', updatePosition);
+  }, []);
+  return scrollPosition;
+}
 
 export default function Index() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -88,9 +101,12 @@ export default function Index() {
     let navigate = useNavigate();
     // And return a function which will navigate to `.` (same URL) and replace it
     return useCallback(function revalidate() {
-      navigate(".", { replace: true });
+      navigate("./?scroll="+scrollPosition, { replace: true });
     }, [navigate]);
   }
+
+  const scrollPosition = useScroll();
+  console.log("why does this get reset to 0 and how to fix it? ", scrollPosition);
 
   function useRevalidateOnInterval({ enabled = false, interval = 1000 }: Options) {
     let revalidate = useRevalidate();
@@ -103,7 +119,6 @@ export default function Index() {
 
   useRevalidateOnInterval({ enabled: true, interval: 10000 });
   const data = useLoaderData<typeof loader>();
-
   return (
     <>
       <ButtonAppBar></ButtonAppBar>
@@ -113,7 +128,7 @@ export default function Index() {
           {selectedTab === 0 && data.tournament?.games.map(game => (
             <GameCard key={game.id.toString()} game={game}></GameCard>))}
           {selectedTab === 1 && (
-            <ScoreBoardTab></ScoreBoardTab>)}
+            <ScoreBoardTab games={data.tournament?.games}></ScoreBoardTab>)}
         </Grid>
       </div>
     </>);

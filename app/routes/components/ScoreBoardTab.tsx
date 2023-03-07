@@ -6,51 +6,37 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import type { GameWithPlayer } from "~/routes/components/GameCard";
+import { getLiveScore } from "~/services/livescore";
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-) {
-  return { name, calories, fat, carbs, protein };
-}
+export default function ScoreBoardTab({ games }: { games: GameWithPlayer[] | undefined }) {
+  if (!games) { return <></> }
+  const liveScore = getLiveScore(games);
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
-export default function ScoreBoardTab() {
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <br />
+      <br />
+      <br />
+      <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>bla</TableCell>
-            <TableCell align="right">Name</TableCell>
-            <TableCell align="right">Wins&nbsp;(g)</TableCell>
-            <TableCell align="right">Points Won&nbsp;(g)</TableCell>
-            <TableCell align="right">Points Lost&nbsp;(g)</TableCell>
+            <TableCell align="left">Name</TableCell>
+            <TableCell align="right">Wins</TableCell>
+            <TableCell align="right">Points Won</TableCell>
+            <TableCell align="right">Points Lost</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {liveScore.map((liveScore, index) => (
             <TableRow
-              key={row.name}
+              key={index}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+              <TableCell align="left">{liveScore.player.name}</TableCell>
+              <TableCell align="right">{liveScore.wins}</TableCell>
+              <TableCell align="right">{liveScore.totalPointsWon}</TableCell>
+              <TableCell align="right">{liveScore.totalPointsLost}</TableCell>
             </TableRow>
           ))}
         </TableBody>
