@@ -8,7 +8,7 @@ import {
   Grid,
   Paper
 } from "@mui/material";
-import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import RestoreIcon from "@mui/icons-material/Restore";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
@@ -77,18 +77,6 @@ interface Options {
   enabled?: boolean;
   interval?: number;
 }
-function useScroll() {
-  const [scrollPosition, setPosition] = useState(0);
-  useEffect(() => {
-    function updatePosition() {
-      setPosition(window.pageYOffset);
-    }
-    window.addEventListener('scroll', updatePosition);
-    updatePosition();
-    return () => window.removeEventListener('scroll', updatePosition);
-  }, []);
-  return scrollPosition;
-}
 
 export default function Index() {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -97,16 +85,11 @@ export default function Index() {
   };
 
   function useRevalidate() {
-    // We get the navigate function from React Rotuer
     let navigate = useNavigate();
-    // And return a function which will navigate to `.` (same URL) and replace it
     return useCallback(function revalidate() {
-      navigate("./?scroll="+scrollPosition, { replace: true });
+      navigate(".", { replace: true, preventScrollReset: true });
     }, [navigate]);
   }
-
-  const scrollPosition = useScroll();
-  console.log("why does this get reset to 0 and how to fix it? ", scrollPosition);
 
   function useRevalidateOnInterval({ enabled = false, interval = 1000 }: Options) {
     let revalidate = useRevalidate();
