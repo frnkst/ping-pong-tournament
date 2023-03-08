@@ -7,6 +7,7 @@ import ButtonAppBar from "~/routes/components/ButtonAppBar";
 import LeaderBoardTab from "~/routes/components/LeaderBoardTab";
 import { SimpleBottomNavigation } from "~/routes/components/SimpleBottomNavigation";
 import GamesTab from "./components/GamesTab";
+import StatsTab from "~/routes/components/StatsTab";
 
 export async function loader() {
   const tournament = await prisma.tournament.findFirst({
@@ -37,7 +38,7 @@ const classes = {
   root: {
     flexGrow: 1
   },
-  frank : {
+  frank: {
     paddingTop: 30
   },
   paper: {
@@ -84,9 +85,9 @@ export default function Index() {
       <ButtonAppBar></ButtonAppBar>
       <SimpleBottomNavigation onSelection={handleSelection}></SimpleBottomNavigation>
       <div style={classes.root}>
-          {selectedTab === 0 && (<GamesTab games={games}></GamesTab>)}
-          {selectedTab === 1 && (<>
-            <LeaderBoardTab games={games}></LeaderBoardTab></>)}
+        {selectedTab === 0 && (<GamesTab games={games}></GamesTab>)}
+        {selectedTab === 1 && (<><LeaderBoardTab games={games}></LeaderBoardTab></>)}
+        {selectedTab === 2 && (<><StatsTab games={games}></StatsTab></>)}
       </div>
     </>);
 }
