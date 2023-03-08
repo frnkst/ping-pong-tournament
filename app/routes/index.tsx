@@ -2,11 +2,10 @@ import { prisma } from "~/db.server";
 import type { ActionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
-import { Grid } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
-import ScoreBoardTab from "~/routes/components/ScoreBoardTab";
-import { SimpleBottomNavigation } from "~/routes/components/BottomNavigation";
+import LeaderBoardTab from "~/routes/components/LeaderBoardTab";
+import { SimpleBottomNavigation } from "~/routes/components/SimpleBottomNavigation";
 import GamesTab from "./components/GamesTab";
 
 export async function loader() {
@@ -87,7 +86,7 @@ export default function Index() {
       <div style={classes.root}>
           {selectedTab === 0 && (<GamesTab games={games}></GamesTab>)}
           {selectedTab === 1 && (<>
-            <ScoreBoardTab games={games}></ScoreBoardTab></>)}
+            <LeaderBoardTab games={games}></LeaderBoardTab></>)}
       </div>
     </>);
 }
