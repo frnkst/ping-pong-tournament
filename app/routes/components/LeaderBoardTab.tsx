@@ -42,7 +42,7 @@ export default function LeaderBoardTab({ games }: { games: GameWithPlayer[] | un
             ))}
           </TableBody>
         </Table>
-      </TableContainer>;
+      </TableContainer>
     </>
-  )
+  );
 }
