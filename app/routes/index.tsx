@@ -2,18 +2,12 @@ import { prisma } from "~/db.server";
 import type { ActionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Grid,
-  Paper
-} from "@mui/material";
+import { Grid } from "@mui/material";
 import React, { useCallback, useEffect, useState } from "react";
-import RestoreIcon from "@mui/icons-material/Restore";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import ButtonAppBar from "~/routes/components/ButtonAppBar";
-import GameCard from "./components/GameCard";
 import ScoreBoardTab from "~/routes/components/ScoreBoardTab";
+import { SimpleBottomNavigation } from "~/routes/components/BottomNavigation";
+import GamesTab from "./components/GamesTab";
 
 export async function loader() {
   const tournament = await prisma.tournament.findFirst({
@@ -40,30 +34,12 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export function SimpleBottomNavigation({ onSelection }: { onSelection: (value: string) => void }) {
-  const [value, setValue] = useState(0);
-
-  return (
-    <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }} elevation={3}>
-      <BottomNavigation
-        showLabels
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-          onSelection(newValue);
-        }}
-      >
-        <BottomNavigationAction label="Games" icon={<RestoreIcon />} />
-        <BottomNavigationAction label="Scoreboard" icon={<FavoriteIcon />} />
-        <BottomNavigationAction label="Stats" icon={<FavoriteIcon />} />
-      </BottomNavigation>
-    </Paper>
-  );
-}
-
 const classes = {
   root: {
     flexGrow: 1
+  },
+  frank : {
+    paddingTop: 30
   },
   paper: {
     padding: 20,
@@ -73,7 +49,7 @@ const classes = {
   }
 };
 
-interface Options {
+interface IntervallOptions {
   enabled?: boolean;
   interval?: number;
 }
@@ -91,7 +67,7 @@ export default function Index() {
     }, [navigate]);
   }
 
-  function useRevalidateOnInterval({ enabled = false, interval = 1000 }: Options) {
+  function useRevalidateOnInterval({ enabled = false, interval = 1000 }: IntervallOptions) {
     let revalidate = useRevalidate();
     useEffect(function revalidateOnInterval() {
       if (!enabled) return;
@@ -102,17 +78,16 @@ export default function Index() {
 
   useRevalidateOnInterval({ enabled: true, interval: 10000 });
   const data = useLoaderData<typeof loader>();
+  const games = data.tournament?.games;
+
   return (
     <>
       <ButtonAppBar></ButtonAppBar>
       <SimpleBottomNavigation onSelection={handleSelection}></SimpleBottomNavigation>
       <div style={classes.root}>
-        <Grid container spacing={2}>
-          {selectedTab === 0 && data.tournament?.games.map(game => (
-            <GameCard key={game.id.toString()} game={game}></GameCard>))}
-          {selectedTab === 1 && (
-            <ScoreBoardTab games={data.tournament?.games}></ScoreBoardTab>)}
-        </Grid>
+          {selectedTab === 0 && (<GamesTab games={games}></GamesTab>)}
+          {selectedTab === 1 && (<>
+            <ScoreBoardTab games={games}></ScoreBoardTab></>)}
       </div>
     </>);
 }
