@@ -1,5 +1,5 @@
 import type { GameWithPlayer } from "~/routes/components/GameCard";
-import { find, indexOf, sortBy } from "lodash";
+import { find, indexOf, orderBy, sortBy } from "lodash";
 
 export type LiveScore = {
   player: {
@@ -60,7 +60,7 @@ export function getLiveScore(games: GameWithPlayer[]): LiveScore[] {
     updateLiveScore(liveScore, newScores);
   }
 
-  return sortBy(liveScore, ["wins", "totalPointsWon", "totalPointsLost"]).reverse();
+  return orderBy(liveScore, ["wins", "totalPointsWon", "totalPointsLost"], ['asc', 'asc', 'desc']).reverse();
 }
 
 
