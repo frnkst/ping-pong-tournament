@@ -2,7 +2,7 @@ import type { Game } from ".prisma/client";
 import type { Player } from "@prisma/client";
 import React, { useState } from "react";
 import { Form, useSubmit } from "@remix-run/react";
-import { Box, Button, Input, Modal, Typography } from "@mui/material";
+import { Box, Button, Input, Modal, TextField, Typography } from "@mui/material";
 
 const style = {
   position: "absolute" as "absolute",
@@ -19,7 +19,8 @@ const style = {
 export default function UpdateScore({ game }: { game: Game & { player1: Player, player2: Player } }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
-  const handleClose = (event: any) => {
+  const handleCancel = () => setOpen(false);
+  const handleSave = (event: any) => {
     submit(event.currentTarget, { replace: true });
     setOpen(false);
   };
@@ -30,24 +31,34 @@ export default function UpdateScore({ game }: { game: Game & { player1: Player, 
       <Button onClick={handleOpen}>Edit</Button>
       <Modal
         open={open}
-        onClose={handleClose}
+        onClose={handleSave}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Form method="post">
           <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h3" component="h2">
+            <Typography id="modal-modal-title" variant="h6" component="h2">
               Edit score
             </Typography>
             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              {game.player1.name}: <Input name="scorePlayer1"
-                                          placeholder={game.scorePlayer1.toString()}></Input>
+              <TextField name="scorePlayer1" variant="outlined" label={game.player1.name}
+                                          placeholder={game.scorePlayer1.toString()}></TextField>
               <br />
-              {game.player2.name}: <Input name="scorePlayer2"
-                                          placeholder={game.scorePlayer2.toString()}></Input>
+              <br />
+              <TextField name="scorePlayer2" variant="outlined" label={game.player2.name}
+                                              placeholder={game.scorePlayer2.toString()}></TextField>
               <Input type="hidden" name="gameId" value={game.id}></Input>
             </Typography>
-            <Button onClick={handleClose}>Submit</Button>
+            <br />
+            <br />
+            <div style={{ display: "flex", justifyContent: "space-between"}}>
+              <Button variant="outlined" color="error" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button variant="contained" color="success" onClick={handleSave}>
+                Save
+              </Button>
+            </div>
           </Box>
         </Form>
       </Modal>
