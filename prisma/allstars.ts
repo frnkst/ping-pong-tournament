@@ -12,7 +12,6 @@ async function seed() {
     }
   });
 
-
   const players = ["Frank", "Yves", "Navin", "Stibzn", "Dän", "Adi", "Kuri", "Trevi"];
   for (const player of players) {
     await prisma.player.create({
