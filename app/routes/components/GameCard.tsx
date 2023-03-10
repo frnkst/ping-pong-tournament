@@ -6,6 +6,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 export type GameWithPlayer = Game & { player1: Player, player2: Player }
 
+const container = {
+  margin: "30px auto",
+  display: "grid",
+  gridTemplateColumns: "50px 10px 50px",
+  columnGap: "5px",
+  gridGap: "30",
+  justifyContent: "center"
+}
 export default function GameCard({ game }: { game: GameWithPlayer }) {
   const gameCompleted = (game.scorePlayer1 >= 21 || game.scorePlayer2 >= 21);
   return (<Grid item xs={6}>
@@ -18,14 +26,14 @@ export default function GameCard({ game }: { game: GameWithPlayer }) {
           {gameCompleted && <><CheckCircleIcon style={{ color: "green" }}></CheckCircleIcon></>}
         </div>
         <br />
-        <Typography align="center">
-          {game.player1.name} - {game.player2.name}
-        </Typography>
-        <Typography align="center">
-          {game.scorePlayer1.toString()}
-          :
-          {game.scorePlayer2.toString()}
-        </Typography>
+        <div style={container}>
+          <div style={{ textAlign: "right"}}>{game.player1.name}</div>
+          <div style={{ textAlign: "center"}}>-</div>
+          <div>{game.player2.name}</div>
+          <div style={{ textAlign: "right"}}>{game.scorePlayer1.toString()}</div>
+          <div style={{ textAlign: "center"}}>:</div>
+          <div>{game.scorePlayer2.toString()}</div>
+        </div>
       </CardContent>
       <CardActions>
         <UpdateScore game={game}></UpdateScore>
