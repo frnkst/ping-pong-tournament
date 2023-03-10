@@ -22,7 +22,7 @@ if (process.env.NODE_ENV === "production") {
 
 function getClient() {
   const { DATABASE_URL } = process.env;
-  console.log(`🔌 setting up prisma client to hey ${DATABASE_URL}`);
+  console.log(`🔌 setting up prisma client to ${DATABASE_URL}`);
   // NOTE: during development if you change anything in this function, remember
   // that this only runs once per server restart and won't automatically be
   // re-run per request like everything else is. So if you need to change
