@@ -14,7 +14,6 @@ it('should return player1 as the winner', () => {
   });
 });
 
-
 it('should return player3 as the second', () => {
   const score = getLiveScore(someGames());
   expect(score[1]).toEqual({
