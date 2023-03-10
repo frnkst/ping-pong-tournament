@@ -3,6 +3,7 @@ import UpdateScore from "~/routes/components/UpdateScore";
 import React from "react";
 import type { Game, Player } from "@prisma/client";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import type { User } from "~/models/user.server";
 
 export type GameWithPlayer = Game & { player1: Player, player2: Player }
 
@@ -14,7 +15,10 @@ const container = {
   gridGap: "30",
   justifyContent: "center"
 }
-export default function GameCard({ game }: { game: GameWithPlayer }) {
+export default function GameCard({ game, user }: { game: GameWithPlayer, user: User | undefined }) {
+
+  console.log("test", user);
+
   const gameCompleted = (game.scorePlayer1 >= 21 || game.scorePlayer2 >= 21);
   return (<Grid item xs={6}>
     <Card>
@@ -36,7 +40,7 @@ export default function GameCard({ game }: { game: GameWithPlayer }) {
         </div>
       </CardContent>
       <CardActions>
-        <UpdateScore game={game}></UpdateScore>
+        { user && <UpdateScore game={game}></UpdateScore> }
       </CardActions>
     </Card>
   </Grid>);

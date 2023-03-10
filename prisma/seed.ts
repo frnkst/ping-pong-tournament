@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 invariant(process.env.ADMIN_PASSWORD, "You must set ADMIN_PASSWORD in .env file");
 
 async function seed() {
-  const email = "rachel@remix.run";
+  const email = "frankyfresh@remix.com";
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {

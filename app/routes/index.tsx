@@ -8,6 +8,7 @@ import LeaderBoardTab from "~/routes/components/LeaderBoardTab";
 import { SimpleBottomNavigation } from "~/routes/components/SimpleBottomNavigation";
 import GamesTab from "./components/GamesTab";
 import StatsTab from "~/routes/components/StatsTab";
+import { useOptionalUser } from "~/utils";
 
 export async function loader() {
   const tournament = await prisma.tournament.findFirst({
@@ -60,6 +61,9 @@ export default function Index() {
     setSelectedTab(selection);
   };
 
+  const user = useOptionalUser();
+  console.log("got a user" , user)
+
   function useRevalidate() {
     let navigate = useNavigate();
     return useCallback(function revalidate() {
@@ -85,7 +89,7 @@ export default function Index() {
       <ButtonAppBar></ButtonAppBar>
       <SimpleBottomNavigation onSelection={handleSelection}></SimpleBottomNavigation>
       <div style={classes.root}>
-        {selectedTab === 0 && (<GamesTab games={games}></GamesTab>)}
+        {selectedTab === 0 && (<GamesTab games={games} user={user}></GamesTab>)}
         {selectedTab === 1 && (<><LeaderBoardTab games={games}></LeaderBoardTab></>)}
         {selectedTab === 2 && (<><StatsTab games={games}></StatsTab></>)}
       </div>

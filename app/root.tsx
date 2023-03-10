@@ -13,10 +13,18 @@ import {
   useCatch
 } from "@remix-run/react";
 import ClientStyleContext from "~/clientStyleContext";
+import { getUser } from "./session.server";
+import { json, LoaderArgs } from "@remix-run/node";
 
 interface DocumentProps {
   children: React.ReactNode;
   title?: string;
+}
+
+export async function loader({ request }: LoaderArgs) {
+  return json({
+    user: await getUser(request),
+  });
 }
 
 const Document = withEmotionCache(({ children, title }: DocumentProps, emotionCache) => {
