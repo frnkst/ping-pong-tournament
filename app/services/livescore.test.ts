@@ -12,7 +12,7 @@ it('should return player1 as the winner', () => {
     totalPointsWon: 42,
     totalPointsLost: 4
   });
-})
+});
 
 it('should return player3 as the second', () => {
   const score = getLiveScore(someGames());
