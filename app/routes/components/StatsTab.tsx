@@ -63,7 +63,7 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
       <Box sx={{ width: '100%', mr: 1 }}>
-        <LinearProgress variant="determinate" {...props} />
+        <LinearProgress variant="determinate" {...props} style={{ border: '1px solid black', height: 40, borderRadius: 8}} />
       </Box>
       <Box sx={{ minWidth: 35 }}>
         <Typography variant="body2" color="text.secondary">{`${Math.round(
@@ -91,6 +91,7 @@ export default function StatsTab({ games }: { games: GameWithPlayer[] | undefine
         <LinearProgressWithLabel value={100 / totalGames * gamesCompleted} />
       </Box>
 
+      <h2>Some other useful stats</h2>
       <div style={{ height: 400 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart

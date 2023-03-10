@@ -9,6 +9,7 @@ import { SimpleBottomNavigation } from "~/routes/components/SimpleBottomNavigati
 import GamesTab from "./components/GamesTab";
 import StatsTab from "~/routes/components/StatsTab";
 import { useOptionalUser } from "~/utils";
+import { requireUser } from "~/session.server";
 
 export async function loader() {
   const tournament = await prisma.tournament.findFirst({
@@ -18,8 +19,9 @@ export async function loader() {
   return json({ tournament });
 }
 
-
 export async function action({ request }: ActionArgs) {
+  await requireUser(request);
+
   const form = await request.formData();
 
   // Use zod to validate data

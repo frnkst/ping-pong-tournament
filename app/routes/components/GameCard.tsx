@@ -7,7 +7,7 @@ import type { User } from "~/models/user.server";
 
 export type GameWithPlayer = Game & { player1: Player, player2: Player }
 
-const container = {
+const scoreContainer = {
   margin: "30px auto",
   display: "grid",
   gridTemplateColumns: "50px 10px 50px",
@@ -16,9 +16,6 @@ const container = {
   justifyContent: "center"
 }
 export default function GameCard({ game, user }: { game: GameWithPlayer, user: User | undefined }) {
-
-  console.log("test", user);
-
   const gameCompleted = (game.scorePlayer1 >= 21 || game.scorePlayer2 >= 21);
   return (<Grid item xs={6}>
     <Card>
@@ -30,7 +27,7 @@ export default function GameCard({ game, user }: { game: GameWithPlayer, user: U
           {gameCompleted && <><CheckCircleIcon style={{ color: "green" }}></CheckCircleIcon></>}
         </div>
         <br />
-        <div style={container}>
+        <div style={scoreContainer}>
           <div style={{ textAlign: "right"}}>{game.player1.name}</div>
           <div style={{ textAlign: "center"}}>-</div>
           <div>{game.player2.name}</div>
