@@ -64,7 +64,6 @@ export default function Index() {
   };
 
   const user = useOptionalUser();
-  console.log("got a user" , user)
 
   function useRevalidate() {
     let navigate = useNavigate();

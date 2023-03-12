@@ -42,7 +42,6 @@ export async function getUser(request: Request) {
   throw await logout(request);
 }
 
-
 export async function requireUserId(
   request: Request,
   redirectTo: string = new URL(request.url).pathname
