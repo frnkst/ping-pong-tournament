@@ -113,7 +113,7 @@ jobs:
         run: npx prisma migrate reset --force
 
       - name: 🛠 Seed the database
-        run: ts-node prisma/allstars.ts
+        run: npx ts-node prisma/allstars.ts
 
       - name: ⚙️ Build
         run: npm run build
