@@ -1,5 +1,5 @@
 import type { GameWithPlayer } from "~/routes/components/GameCard";
-import { find, indexOf, orderBy, sortBy } from "lodash";
+import { find, indexOf, orderBy } from "lodash";
 
 export type LiveScore = {
   player: {
@@ -8,7 +8,8 @@ export type LiveScore = {
   },
   wins: number,
   totalPointsWon: number,
-  totalPointsLost: number
+  totalPointsLost: number,
+  differencePoints?: number,
 }
 
 function getNewScores(game: GameWithPlayer): LiveScore[] {
@@ -41,7 +42,7 @@ function updateLiveScore(liveScore: LiveScore[], newScores: LiveScore[]) {
         ...existingPlayer,
         wins: existingPlayer.wins + score.wins,
         totalPointsWon: existingPlayer.totalPointsWon + score.totalPointsWon,
-        totalPointsLost: existingPlayer.totalPointsLost + score.totalPointsLost
+        totalPointsLost: existingPlayer.totalPointsLost + score.totalPointsLost,
       };
       updatedScore.wins = updatedScore.wins < 0 ? 0 : updatedScore.wins;
       const index = indexOf(liveScore, find(liveScore, (liveScore) => liveScore.player.id === score.player.id));
@@ -60,7 +61,9 @@ export function getLiveScore(games: GameWithPlayer[]): LiveScore[] {
     updateLiveScore(liveScore, newScores);
   }
 
-  return orderBy(liveScore, ["wins", "totalPointsWon", "totalPointsLost"], ['asc', 'asc', 'desc']).reverse();
+  liveScore.forEach(score => score.differencePoints = score.totalPointsWon - score.totalPointsLost)
+
+  return orderBy(liveScore, ["wins", "differencePoints"], ['asc', 'asc']).reverse();
 }
 
 

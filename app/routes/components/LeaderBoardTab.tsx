@@ -24,8 +24,7 @@ export default function LeaderBoardTab({ games }: { games: GameWithPlayer[] | un
             <TableRow>
               <TableCell align="left">Name</TableCell>
               <TableCell align="right">Wins</TableCell>
-              <TableCell align="right">Points Won</TableCell>
-              <TableCell align="right">Points Lost</TableCell>
+              <TableCell align="right">Points (Won - Lost)</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -36,8 +35,7 @@ export default function LeaderBoardTab({ games }: { games: GameWithPlayer[] | un
               >
                 <TableCell align="left">{liveScore.player.name}</TableCell>
                 <TableCell align="right">{liveScore.wins}</TableCell>
-                <TableCell align="right">{liveScore.totalPointsWon}</TableCell>
-                <TableCell align="right">{liveScore.totalPointsLost}</TableCell>
+                <TableCell align="right">{liveScore.totalPointsWon  - liveScore.totalPointsLost }</TableCell>
               </TableRow>
             ))}
           </TableBody>
