@@ -21,13 +21,13 @@ function getNewScores(game: GameWithPlayer): LiveScore[] {
   return [
     {
       player: game.player1,
-      wins: player1IsWinner ? 1 : -1,
+      wins: player1IsWinner ? 1 : 0,
       totalPointsWon: game.scorePlayer1,
       totalPointsLost: game.scorePlayer2
     },
     {
       player: game.player2,
-      wins: player1IsWinner ? -1 : 1,
+      wins: player1IsWinner ? 0 : 1,
       totalPointsWon: game.scorePlayer2,
       totalPointsLost: game.scorePlayer1
     }
@@ -52,6 +52,7 @@ function updateLiveScore(liveScore: LiveScore[], newScores: LiveScore[]) {
       liveScore.push(score);
     }
   }
+  console.log("liveScore", liveScore[0]);
 }
 
 export function getLiveScore(games: GameWithPlayer[]): LiveScore[] {
